@@ -2,7 +2,7 @@
 public class Attack 
 {
 	private String name;
-	private double strength;
+    double strength;
 	private double cost;
 	private int accuracy;
 	public Attack()
