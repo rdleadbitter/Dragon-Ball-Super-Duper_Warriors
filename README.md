@@ -1,1 +1,1 @@
-# Tenkaishitty
+# Dragon Ball Super Duper Warriors: A simple, turn-based, arcade-style fighting game using Dragon Ball Z characters. Originally, this game ran in the command-line, but I revisited the project to add a GUI. The main purpose of this project was to teach myself more advanced coding principles, and to gain more experience as a front end developer.
