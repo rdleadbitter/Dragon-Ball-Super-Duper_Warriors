@@ -26,6 +26,7 @@ public class GameFE extends Application {
         score = 0;
         round = 0;
         stage = primaryStage;
+        stage.setTitle("Dragon Ball Super Duper Warriors");
 
         playerStatsLabel = new Label("Player: ");
         enemyStatsLabel = new Label("Enemy: ");
@@ -71,6 +72,7 @@ public class GameFE extends Application {
     private void showCharacterSelectionScreen() {
         VBox characterSelectionLayout = new VBox(10);
         characterSelectionLayout.setStyle("-fx-alignment: center; -fx-background-color: lightblue;");
+        Label chooseCharacter = new Label("Choose your fighter!");
 
         Button chooseGoku = new Button("Choose Goku");
         Button chooseVegeta = new Button("Choose Vegeta");
@@ -102,12 +104,11 @@ public class GameFE extends Application {
         chooseCell.setOnAction(e -> startGame(Fighter.cellMaker()));
         chooseBuu.setOnAction(e -> startGame(Fighter.buuMaker()));
 
-        characterSelectionLayout.getChildren().addAll(chooseGoku, chooseVegeta, chooseGohan, choosePiccolo, chooseTrunks,
+        characterSelectionLayout.getChildren().addAll(chooseCharacter, chooseGoku, chooseVegeta, chooseGohan, choosePiccolo, chooseTrunks,
                                                         chooseKrillin, chooseFrieza, chooseCell, chooseBuu);
 
         Scene characterSelectionScene = new Scene(characterSelectionLayout, 600, 600);
         stage.setScene(characterSelectionScene);
-        stage.setTitle("Character Selection");
         stage.show();
     }
 
@@ -140,7 +141,6 @@ public class GameFE extends Application {
         // Transition to the battle screen after selection
         Scene battleScene = new Scene(mainLayout, 600, 600);
         stage.setScene(battleScene);
-        stage.setTitle("Battle Game");
         stage.show();
     }
 
@@ -187,7 +187,6 @@ public class GameFE extends Application {
         gameOverLayout.getChildren().addAll(new Label("Game Over!"), battleLogLabel, playAgainButton);
         Scene gameOverScene = new Scene(gameOverLayout, 600, 600);
         stage.setScene(gameOverScene);
-        stage.setTitle("Game Over");
         stage.show();
     }
 
