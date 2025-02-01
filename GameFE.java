@@ -18,20 +18,15 @@ public class GameFE extends Application {
     private Label scoreLabel;
     private Button attack1Button, attack2Button, attack3Button, attack4Button, continueButton;
     private ImageView playerImageView, enemyImageView;
+    private Stage stage;
 
     @Override
     public void start(Stage primaryStage) {
         // Initial setup
         score = 0;
         round = 0;
+        stage = primaryStage;
 
-        // UI elements
-        VBox mainLayout = new VBox(10);
-        HBox battleLayout = new HBox(20);
-        battleLayout.setStyle("-fx-alignment: center;");
-        mainLayout.setStyle("-fx-alignment: center;");
-
-        // Labels to display stats
         playerStatsLabel = new Label("Player: ");
         enemyStatsLabel = new Label("Enemy: ");
         battleLogLabel = new Label("Battle Log: ");
@@ -41,18 +36,16 @@ public class GameFE extends Application {
         attack2Button = new Button("Attack 2");
         attack3Button = new Button("Attack 3");
         attack4Button = new Button("Attack 4");
-
-        // Button colors for attacks
         attack1Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
         attack2Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
         attack3Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
         attack4Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
         
         // Button actions for attacks
-        attack1Button.setOnAction(e -> handleAttack(0, primaryStage, mainLayout));
-        attack2Button.setOnAction(e -> handleAttack(1, primaryStage, mainLayout));
-        attack3Button.setOnAction(e -> handleAttack(2, primaryStage, mainLayout));
-        attack4Button.setOnAction(e -> handleAttack(3, primaryStage, mainLayout));
+        attack1Button.setOnAction(e -> handleAttack(0));
+        attack2Button.setOnAction(e -> handleAttack(1));
+        attack3Button.setOnAction(e -> handleAttack(2));
+        attack4Button.setOnAction(e -> handleAttack(3));
 
         // Continue button (Diabled by default)
         continueButton = new Button("continue");
@@ -60,7 +53,7 @@ public class GameFE extends Application {
 
         // Buttons to start a new game or select a new character after a loss
         Button restartButton = new Button("Play Again");
-        restartButton.setOnAction(e -> endGame(primaryStage, mainLayout));
+        restartButton.setOnAction(e -> endGame());
         continueButton.setOnAction(e -> prepareNextRound());
 
         // Player and Enemy character images
@@ -70,21 +63,12 @@ public class GameFE extends Application {
         playerImageView.setFitHeight(150);
         enemyImageView.setFitWidth(150);
         enemyImageView.setFitHeight(150);
-
-        VBox playerBox = new VBox(10, playerImageView, playerStatsLabel);
-        VBox enemyBox = new VBox(10, enemyImageView, enemyStatsLabel);
-
-        // Add elements to the layout
-        battleLayout.getChildren().addAll(playerBox, enemyBox);
-        mainLayout.getChildren().addAll(battleLayout, battleLogLabel, scoreLabel, 
-                                        attack1Button, attack2Button, attack3Button, attack4Button, continueButton);
-        showCharacterSelectionScreen(primaryStage, mainLayout);
         
         // Initially, show the character selection screen
-        showCharacterSelectionScreen(primaryStage, mainLayout);
+        showCharacterSelectionScreen();
     }
 
-    private void showCharacterSelectionScreen(Stage primaryStage, VBox layout) {
+    private void showCharacterSelectionScreen() {
         VBox characterSelectionLayout = new VBox(10);
         characterSelectionLayout.setStyle("-fx-alignment: center; -fx-background-color: lightblue;");
 
@@ -108,27 +92,27 @@ public class GameFE extends Application {
         chooseCell.setStyle("-fx-background-color: green; -fx-text-fill: white;");
         chooseBuu.setStyle("-fx-background-color: pink; -fx-text-fill: white;");
 
-        chooseGoku.setOnAction(e -> startGame(Fighter.gokuMaker(), primaryStage, layout));
-        chooseVegeta.setOnAction(e -> startGame(Fighter.vegetaMaker(), primaryStage, layout));
-        chooseGohan.setOnAction(e -> startGame(Fighter.gohanMaker(), primaryStage, layout));
-        choosePiccolo.setOnAction(e -> startGame(Fighter.piccoloMaker(), primaryStage, layout));
-        chooseTrunks.setOnAction(e -> startGame(Fighter.trunksMaker(), primaryStage, layout));
-        chooseKrillin.setOnAction(e -> startGame(Fighter.krillinMaker(), primaryStage, layout));
-        chooseFrieza.setOnAction(e -> startGame(Fighter.friezaMaker(), primaryStage, layout));
-        chooseCell.setOnAction(e -> startGame(Fighter.cellMaker(), primaryStage, layout));
-        chooseBuu.setOnAction(e -> startGame(Fighter.buuMaker(), primaryStage, layout));
+        chooseGoku.setOnAction(e -> startGame(Fighter.gokuMaker()));
+        chooseVegeta.setOnAction(e -> startGame(Fighter.vegetaMaker()));
+        chooseGohan.setOnAction(e -> startGame(Fighter.gohanMaker()));
+        choosePiccolo.setOnAction(e -> startGame(Fighter.piccoloMaker()));
+        chooseTrunks.setOnAction(e -> startGame(Fighter.trunksMaker()));
+        chooseKrillin.setOnAction(e -> startGame(Fighter.krillinMaker()));
+        chooseFrieza.setOnAction(e -> startGame(Fighter.friezaMaker()));
+        chooseCell.setOnAction(e -> startGame(Fighter.cellMaker()));
+        chooseBuu.setOnAction(e -> startGame(Fighter.buuMaker()));
 
         characterSelectionLayout.getChildren().addAll(chooseGoku, chooseVegeta, chooseGohan, choosePiccolo, chooseTrunks,
                                                         chooseKrillin, chooseFrieza, chooseCell, chooseBuu);
 
         Scene characterSelectionScene = new Scene(characterSelectionLayout, 600, 600);
-        primaryStage.setScene(characterSelectionScene);
-        primaryStage.setTitle("Character Selection");
-        primaryStage.show();
+        stage.setScene(characterSelectionScene);
+        stage.setTitle("Character Selection");
+        stage.show();
     }
 
     // Start the game with selected player
-    private void startGame(Fighter selectedPlayer, Stage primaryStage, VBox layout) {
+    private void startGame(Fighter selectedPlayer) {
         // Initialize the game backend
         game = new GameBE(selectedPlayer);
 
@@ -139,15 +123,28 @@ public class GameFE extends Application {
         enemyImageView.setImage(new Image(game.getEnemy().getImagePath()));
         enemyImageView.setScaleX(-1);
 
+        // Setup layouts
+        VBox mainLayout = new VBox(10);
+        HBox battleLayout = new HBox(20);
+        battleLayout.setStyle("-fx-alignment: center;");
+        mainLayout.setStyle("-fx-alignment: center;");
+        VBox playerBox = new VBox(10, playerImageView, playerStatsLabel);
+        VBox enemyBox = new VBox(10, enemyImageView, enemyStatsLabel);
+
+        // Add elements to the layout
+        battleLayout.getChildren().addAll(playerBox, enemyBox);
+        mainLayout.getChildren().addAll(battleLayout, battleLogLabel, scoreLabel, 
+                                        attack1Button, attack2Button, attack3Button, attack4Button, continueButton);
+        showCharacterSelectionScreen();
+
         // Transition to the battle screen after selection
-        layout.setStyle("-fx-alignment: center; -fx-background-color: lightblue;");
-        Scene battleScene = new Scene(layout, 600, 600);
-        primaryStage.setScene(battleScene);
-        primaryStage.setTitle("Battle Game");
-        primaryStage.show();
+        Scene battleScene = new Scene(mainLayout, 600, 600);
+        stage.setScene(battleScene);
+        stage.setTitle("Battle Game");
+        stage.show();
     }
 
-    private void handleAttack(int attackIndex, Stage primaryStage, VBox layout) {
+    private void handleAttack(int attackIndex) {
         // Disable attack buttons during the turn
         disableAttackButtons(true);
     
@@ -164,14 +161,13 @@ public class GameFE extends Application {
                 // Player wins: Increment the round and allow them to continue to the next round
                 round++;
                 score += round * 10; // Increment score by 10 times the round number
-                //updateStats();
                 // Reset the battle, choose a new enemy, and continue fighting
-                game.resetBattle(); // Reset enemy and health for the player
                 battleLogLabel.setText("You won the round! Preparing for the next round...");
+                disableAttackButtons(true);
                 continueButton.setDisable(false); // Enable Continue button
             } else {
                 // Player loses, end the game
-                endGame(primaryStage, layout);
+                endGame();
             }
         } else {
             // Re-enable attack buttons for the player's next turn
@@ -179,35 +175,36 @@ public class GameFE extends Application {
         }
     }
 
-    private void endGame(Stage primaryStage, VBox layout) {
+    private void endGame() {
         // Display final message and score
         battleLogLabel.setText("Your final score: " + score);
         
         // Add an option for the player to restart or quit after the game ends
         Button playAgainButton = new Button("Play Again");
-        playAgainButton.setOnAction(e -> restartGame(primaryStage, layout));
+        playAgainButton.setOnAction(e -> restartGame());
         VBox gameOverLayout = new VBox(10);
         gameOverLayout.setStyle("-fx-alignment: center;");
         gameOverLayout.getChildren().addAll(new Label("Game Over!"), battleLogLabel, playAgainButton);
         Scene gameOverScene = new Scene(gameOverLayout, 600, 600);
-        primaryStage.setScene(gameOverScene);
-        primaryStage.setTitle("Game Over");
-        primaryStage.show();
+        stage.setScene(gameOverScene);
+        stage.setTitle("Game Over");
+        stage.show();
     }
 
-    private void restartGame(Stage primaryStage, VBox layout) {
+    private void restartGame() {
         // Reset game and score
         score = 0;
         round = 0;
         
         // Show character selection screen again
-        showCharacterSelectionScreen(primaryStage, layout);
+        showCharacterSelectionScreen();
     }
 
     private void prepareNextRound() {
         // Reset battle for the next round
         game.resetBattle();
         updateStats();
+        enemyImageView.setImage(new Image(game.getEnemy().getImagePath()));
 
         // Reset battle log and disable the Continue button
         battleLogLabel.setText("New battle begins! Choose your attack.");

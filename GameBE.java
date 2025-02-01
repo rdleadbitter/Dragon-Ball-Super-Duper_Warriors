@@ -43,7 +43,7 @@ public class GameBE
         Attack attack = player.getAttacks(attackIndex);
         if (player.getEnergy() >= attack.getCost()) {
             int num = random.nextInt(101);
-            if (num >= attack.getAccuracy()+enemy.getSpeed()/15) { 
+            if (num >= attack.getAccuracy()+enemy.getSpeed()/5) { 
                 double damage = (attack.getStrength()*player.getPower()/enemy.getDefense());
                 String formattedDamage = String.format("%.1f", damage);
                 enemy.takeDamage(damage);
@@ -62,7 +62,7 @@ public class GameBE
         Attack attack = enemy.getAttacks()[attackIndex];
         if (enemy.getEnergy() >= attack.getCost()) {
             int num = random.nextInt(101);
-            if (num >= attack.getAccuracy()+player.getSpeed()/15) {
+            if (num >= attack.getAccuracy()+player.getSpeed()/5) {
                 double damage = (attack.getStrength()*player.getPower()/enemy.getDefense());
                 String formattedDamage = String.format("%.1f", damage);
                 player.takeDamage(damage);
@@ -111,7 +111,7 @@ public class GameBE
     }
 
     public void resetBattle() {
-        // Reset the player's health or any other state as needed
+        // Reset the player's health and energy
         player.setHealth(player.getMaxHealth());
         player.setEnergy(player.getMaxEnergy());
         
