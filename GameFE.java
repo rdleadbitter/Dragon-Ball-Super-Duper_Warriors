@@ -1,8 +1,19 @@
+/*
+ * Author: Ryan Leadbitter
+ */
+
+import java.util.Random;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,10 +48,6 @@ public class GameFE extends Application {
         attack2Button = new Button("Attack 2");
         attack3Button = new Button("Attack 3");
         attack4Button = new Button("Attack 4");
-        attack1Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
-        attack2Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
-        attack3Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
-        attack4Button.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
         
         // Button actions for attacks
         attack1Button.setOnAction(e -> handleAttack(0));
@@ -70,6 +77,7 @@ public class GameFE extends Application {
     }
 
     private void showCharacterSelectionScreen() {
+        // Set up character selection screen
         VBox characterSelectionLayout = new VBox(10);
         characterSelectionLayout.setStyle("-fx-alignment: center; -fx-background-color: lightblue;");
         Label chooseCharacter = new Label("Choose your fighter!");
@@ -84,14 +92,14 @@ public class GameFE extends Application {
         Button chooseCell = new Button("Choose Cell");
         Button chooseBuu = new Button("Choose Buu");
 
-        chooseGoku.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
+        chooseGoku.setStyle("-fx-background-color: darkorange; -fx-text-fill: white;");
         chooseVegeta.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
-        chooseGohan.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
+        chooseGohan.setStyle("-fx-background-color: darkorange; -fx-text-fill: white;");
         choosePiccolo.setStyle("-fx-background-color: green; -fx-text-fill: white;");
-        chooseTrunks.setStyle("-fx-background-color: purple; -fx-text-fill: white;");
+        chooseTrunks.setStyle("-fx-background-color: mediumpurple; -fx-text-fill: white;");
         chooseKrillin.setStyle("-fx-background-color: orange; -fx-text-fill: white;");
-        chooseFrieza.setStyle("-fx-background-color: purple; -fx-text-fill: white;");
-        chooseCell.setStyle("-fx-background-color: green; -fx-text-fill: white;");
+        chooseFrieza.setStyle("-fx-background-color: blueviolet; -fx-text-fill: white;");
+        chooseCell.setStyle("-fx-background-color: yellowgreen; -fx-text-fill: white;");
         chooseBuu.setStyle("-fx-background-color: pink; -fx-text-fill: white;");
 
         chooseGoku.setOnAction(e -> startGame(Fighter.gokuMaker()));
@@ -122,6 +130,10 @@ public class GameFE extends Application {
 
         playerImageView.setImage(new Image(game.getPlayer().getImagePath()));
         enemyImageView.setImage(new Image(game.getEnemy().getImagePath()));
+        playerStatsLabel.setStyle("-fx-background-color: grey; -fx-padding: 5px; -fx-text-fill: white;");
+        enemyStatsLabel.setStyle("-fx-background-color: grey; -fx-padding: 5px; -fx-text-fill: white;");
+        scoreLabel.setStyle("-fx-background-color: grey; -fx-padding: 5px; -fx-text-fill: white;");
+        battleLogLabel.setStyle("-fx-background-color: grey; -fx-padding: 5px; -fx-text-fill: white;");
         enemyImageView.setScaleX(-1);
 
         // Setup layouts
@@ -129,8 +141,19 @@ public class GameFE extends Application {
         HBox battleLayout = new HBox(20);
         battleLayout.setStyle("-fx-alignment: center;");
         mainLayout.setStyle("-fx-alignment: center;");
+        attack1Button.setStyle("-fx-background-color: "+game.getPlayer().getColor()+"; -fx-text-fill: white;");
+        attack2Button.setStyle("-fx-background-color: "+game.getPlayer().getColor()+"; -fx-text-fill: white;");
+        attack3Button.setStyle("-fx-background-color: "+game.getPlayer().getColor()+"; -fx-text-fill: white;");
+        attack4Button.setStyle("-fx-background-color: "+game.getPlayer().getColor()+"; -fx-text-fill: white;");
         VBox playerBox = new VBox(10, playerImageView, playerStatsLabel);
+        playerBox.setAlignment(Pos.CENTER);
         VBox enemyBox = new VBox(10, enemyImageView, enemyStatsLabel);
+        enemyBox.setAlignment(Pos.CENTER);
+        Image backgroundImage = new Image("file:backgrounds/"+randomizeBackground());
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                                                         BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                                                         new BackgroundSize(600, 400, false, false, false, true));
+        mainLayout.setBackground(new Background(background));
 
         // Add elements to the layout
         battleLayout.getChildren().addAll(playerBox, enemyBox);
@@ -157,7 +180,11 @@ public class GameFE extends Application {
     
         // Check if the battle is over
         if (game.isBattleOver()) {
-            if (game.getPlayer().getHealth() > 0) {
+            if (game.getPlayer().getEnergy() <= 0) {
+                // Player runs out of energy
+                endGame();
+            }
+            else if (game.getPlayer().getHealth() > 0) {
                 // Player wins: Increment the round and allow them to continue to the next round
                 round++;
                 score += round * 10; // Increment score by 10 times the round number
@@ -183,8 +210,10 @@ public class GameFE extends Application {
         Button playAgainButton = new Button("Play Again");
         playAgainButton.setOnAction(e -> restartGame());
         VBox gameOverLayout = new VBox(10);
-        gameOverLayout.setStyle("-fx-alignment: center;");
-        gameOverLayout.getChildren().addAll(new Label("Game Over!"), battleLogLabel, playAgainButton);
+        gameOverLayout.setStyle("-fx-alignment: center; -fx-background-color: grey;");
+        Label gameOver = new Label("Game Over!");
+        gameOver.setStyle("-fx-text-fill: white;");
+        gameOverLayout.getChildren().addAll(gameOver, battleLogLabel, playAgainButton);
         Scene gameOverScene = new Scene(gameOverLayout, 600, 600);
         stage.setScene(gameOverScene);
         stage.show();
@@ -259,6 +288,18 @@ public class GameFE extends Application {
         attack2Button.setDisable(playerEnergy < game.getPlayer().getAttacks(1).getCost());
         attack3Button.setDisable(playerEnergy < game.getPlayer().getAttacks(2).getCost());
         attack4Button.setDisable(playerEnergy < game.getPlayer().getAttacks(3).getCost());
+    }
+
+    // Choose a random background png for each battle
+    private String randomizeBackground() {
+        Random random = new Random();
+        int num = random.nextInt(3);
+        if (num == 0)
+            return "grassland.png";
+        else if (num == 1)
+            return "wasteland.png";
+        else 
+            return "namek.png";
     }
 
     public static void main(String[] args) {

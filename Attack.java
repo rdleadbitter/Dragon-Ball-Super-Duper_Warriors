@@ -1,10 +1,13 @@
+/*
+ * Author: Ryan Leadbitter
+ */
 
 public class Attack 
 {
 	private String name;
     double strength;
-	private double cost;
-	private int accuracy;
+	private double cost;  // correlates with fighter energy
+	private int accuracy;  // used for miss check calculations
 	public Attack()
 	{
 		this.name = "none";
@@ -43,6 +46,4 @@ public class Attack
 	public void setAccuracy(int accuracy) {
 		this.accuracy = accuracy;
 	}
-	
-	
 }

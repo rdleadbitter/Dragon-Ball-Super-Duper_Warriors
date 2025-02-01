@@ -1,3 +1,6 @@
+/*
+ * Author: Ryan Leadbitter
+ */
 import java.util.Random;
 
 public class GameBE 
@@ -12,6 +15,7 @@ public class GameBE
         this.enemy = chooseEnemy(player);
     }
 
+    // Check speed stats to see who moves first, randomizes if equal
     private Fighter determineFirst() {
         if (player.getSpeed() > enemy.getSpeed()) {
             return player;
@@ -23,8 +27,8 @@ public class GameBE
     }
 
     public String executeTurn(int playerAttackIndex) {
-        Fighter first = determineFirst();
-        String battleLog = "";
+        Fighter first = determineFirst();  // check characters' speed stats
+        String battleLog = "";  // Description of turn to be updated
         if (first == player) {
             battleLog = playerAttack(playerAttackIndex);
             if (!isBattleOver()) {
@@ -43,9 +47,9 @@ public class GameBE
         Attack attack = player.getAttacks(attackIndex);
         if (player.getEnergy() >= attack.getCost()) {
             int num = random.nextInt(101);
-            if (num >= attack.getAccuracy()+enemy.getSpeed()/5) { 
+            if (num >= (attack.getAccuracy()+player.getSpeed()/25)/1.5) {  // Check if attack hits or misses
                 double damage = (attack.getStrength()*player.getPower()/enemy.getDefense());
-                String formattedDamage = String.format("%.1f", damage);
+                String formattedDamage = String.format("%.1f", damage);  // Round double
                 enemy.takeDamage(damage);
                 player.useEnergy(attack.getCost());
                 return player.getName()+" used " + attack.getName() + " dealing " + formattedDamage + " damage!";
@@ -62,7 +66,7 @@ public class GameBE
         Attack attack = enemy.getAttacks()[attackIndex];
         if (enemy.getEnergy() >= attack.getCost()) {
             int num = random.nextInt(101);
-            if (num >= attack.getAccuracy()+player.getSpeed()/5) {
+            if (num >= (attack.getAccuracy()+player.getSpeed()/25)/1.5) {
                 double damage = (attack.getStrength()*player.getPower()/enemy.getDefense());
                 String formattedDamage = String.format("%.1f", damage);
                 player.takeDamage(damage);
@@ -78,9 +82,10 @@ public class GameBE
 
     private Fighter chooseEnemy(Fighter player) {
         if (player == null) {
-            // Handle the case where player is null, either return a default enemy or throw an exception
+            // Handle the case where player is null
             throw new IllegalArgumentException("Player cannot be null");
         }
+        // Choose a random character other than the player character to be the enemy
         while (true) {
             int num = random.nextInt(9);
             if (num == 0 && !(player.getName().equals("Goku")))
@@ -106,8 +111,14 @@ public class GameBE
         }
     }
 
+    // One fighter's health is depleted or player's energy is depleted
     public boolean isBattleOver() {
-        return player.getHealth() <= 0 || enemy.getHealth() <= 0;
+        if (player.getHealth() <= 0 || enemy.getHealth() <= 0)
+            return true;
+        else if (player.getEnergy() <= 0)
+            return true;
+        else
+            return false;
     }
 
     public void resetBattle() {
