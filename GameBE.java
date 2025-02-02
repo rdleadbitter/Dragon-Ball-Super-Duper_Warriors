@@ -67,7 +67,7 @@ public class GameBE
         if (enemy.getEnergy() >= attack.getCost()) {
             int num = random.nextInt(101);
             if (num >= (attack.getAccuracy()+player.getSpeed()/25)/1.5) {
-                double damage = (attack.getStrength()*player.getPower()/enemy.getDefense());
+                double damage = (attack.getStrength()*enemy.getPower()/player.getDefense());
                 String formattedDamage = String.format("%.1f", damage);
                 player.takeDamage(damage);
                 enemy.useEnergy(attack.getCost());
